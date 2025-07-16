@@ -3,6 +3,7 @@ import Boards from './components/Boards';
 import Controller from './components/Controller';
 import { useBoardStore } from './zustand/store';
 import { useState } from 'react';
+import { arrayMove } from '@dnd-kit/sortable';
 
 //1. zustand로 상태 관리 라이브러리를 변경해야 합니다.
 //2. Recoil과 관련된 데이터를 삭제하고, RecoilRoot를 제거하세요.
@@ -24,7 +25,33 @@ function App() {
     setActiveId(active.id);
   };
   const handleDragEnd = (e) => {
-    console.log('drag end');
+    const { active, over } = e;
+
+    if(!over) {
+      setActiveId(null);
+      return;
+    }
+
+    const acitveItem = data.find((item) => item.id === active.id);
+    if(!activeItem){
+      setActiveId(null);
+      return;
+    }
+
+    if(over.data?.current?.type && acitveItem.type !== over.data.current.type) {
+      updateBoardType(active.id, over.data.current.type);
+    }
+    else if(over.id !== active.id) {
+      const activeIndex = data.findIndex((item) => item.id === active.id);
+      const overIndex = data.findIndex((item) => item.id === over.id);
+
+      if(activeIndex !== -1 && overIndex !== -1) {
+        const newItems = arrayMove(data, activeIndex, overIndex);
+        reorderItems(newItems);
+      }
+    }
+
+    setActiveId(null);
   };
   const handleDragOver = (e) => {
     const { active, over } = e;

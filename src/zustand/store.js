@@ -12,7 +12,7 @@ export const useBoardStore = create(
                 set((state) => ({
                     data: state.data.map((item) => (item.id === id ? {...item, type: newType} : item))
                 })),
-            renderItems: (newData) => set({ data: newData })
+            reorderItems: (newData) => set({ data: newData })
         }),
         {
             name: 'board-storage',
